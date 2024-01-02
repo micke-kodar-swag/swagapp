@@ -5,6 +5,7 @@ import Profile from '../features/account/screens/Profile';
 import {MapIcon, CalendarIcon, ProfileIcon} from './TabBarIcons';
 import {EventStackNavigator} from './EventStackNavigation';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {ProfileStackNavigator} from './ProfileStackNavigation';
 
 const BottomTab = createBottomTabNavigator();
 
@@ -40,12 +41,13 @@ export const LoggedInTabs = () => {
         {() => <EventStackNavigator screenOptions={screenOptions} />}
       </BottomTab.Screen>
       <BottomTab.Screen
-        name="Profile"
-        component={Profile}
+        name="Profile Stack"
         options={{
+          headerShown: false,
           tabBarIcon: ProfileIcon,
-        }}
-      />
+        }}>
+        {() => <ProfileStackNavigator screenOptions={screenOptions} />}
+      </BottomTab.Screen>
     </BottomTab.Navigator>
   );
-}
+};

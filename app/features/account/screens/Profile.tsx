@@ -19,16 +19,22 @@ import Field from '../../common/components/Field';
 import Fields from '../../common/components/Fields';
 import {Platform, SafeAreaView, StyleSheet} from 'react-native';
 import {updateUser} from '../services/userService';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../../../navigation/RootStackParamList';
 
 const Profile: React.FC = () => {
   // Get current user and token from Zustand store
   const {user, setUser} = useStore();
-
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const theme = useTheme() as ICustomTheme;
   const styles = createStyles(theme);
 
   // Local state for form fields
-  const [showLocation, setShowLocation] = useState(user?.show_location || false);
+  const [showLocation, setShowLocation] = useState(
+    user?.show_location || false,
+  );
   const [showContactInfo, setShowContactInfo] = useState(
     user?.show_contact_info || false,
   );
@@ -50,17 +56,18 @@ const Profile: React.FC = () => {
       return;
     }
 
-    updateUser(user, showLocation, showContactInfo, contactInfo).then((returnedUser) => { 
-      setUser({
-        ...user,
-        avatar_url: returnedUser?.avatar_url,
-        show_location: returnedUser?.show_location,
+    updateUser(user, showLocation, showContactInfo, contactInfo)
+      .then(returnedUser => {
+        setUser({
+          ...user,
+          avatar_url: returnedUser?.avatar_url,
+          show_location: returnedUser?.show_location,
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setAvatarChanged(false);
       });
-    })
-    .finally(() => {
-      setIsLoading(false);
-      setAvatarChanged(false);
-    });
   };
 
   if (!user) {
@@ -152,6 +159,15 @@ const Profile: React.FC = () => {
               <Text color="white">Logga ut</Text>
             </Button>
           </VStack>
+
+          <Fields style={styles.contributorsButtonWrapper}>
+            <Button
+              onPress={() => {
+                navigation.navigate('Contributors');
+              }}>
+              Visa alla som bidragit
+            </Button>
+          </Fields>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -167,6 +183,9 @@ const createStyles = (theme: ICustomTheme) =>
     contentContainer: {
       padding: 10,
       flexGrow: 1,
+    },
+    contributorsButtonWrapper: {
+      marginTop: 30,
     },
   });
 
